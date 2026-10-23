@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080e18">
+  <title>Safe Sight Guardian · Command Center</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" aria-label="Safe Sight Guardian home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 2.8 27 7v8.4c0 6.4-4.5 11-11 14-6.5-3-11-7.6-11-14V7l11-4.2Z" stroke="currentColor" stroke-width="1.7"/><path d="M7.8 15.6s3-4.2 8.2-4.2 8.2 4.2 8.2 4.2-3 4.3-8.2 4.3-8.2-4.3-8.2-4.3Z" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15.7" r="2.2" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-copy"><strong>SAFE SIGHT</strong><small>GUARDIAN</small></span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-list">
+        <a class="nav-link active" href="#overview"><span class="nav-icon">⌂</span>Overview</a>
+          <a class="nav-link" href="#recordings"><span class="nav-icon">▣</span>Recent clips<span class="nav-count" id="navRecordingCount">0</span></a>
+          <a class="nav-link" href="#camera-grid-title"><span class="nav-icon">▦</span>Cameras</a>
+        <a class="nav-link" href="#candidates"><span class="nav-icon">◈</span>Candidate review<span class="nav-count" id="navCandidateCount">0</span></a>
+        <a class="nav-link" href="#activity"><span class="nav-icon">≋</span>Event history</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="privacy-card">
+          <span class="privacy-icon">⌑</span>
+          <strong>Local footage</strong>
+          <p>Recordings are served from this computer for review.</p>
+        </div>
+        <div class="sidebar-version">SAFE SIGHT GUARDIAN <span>LOCAL INSTANCE</span></div>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumb"><span>Workspace</span><b>/</b><strong>Command center</strong></div>
+        <div class="topbar-right">
+          <div class="connection-pill" id="backendPill"><i class="status-dot"></i><span id="backendLabel">Connecting</span></div>
+          <div class="topbar-divider"></div>
+          <span class="current-time" id="currentTime">--</span>
+          <button class="icon-button" id="refreshButton" type="button" aria-label="Refresh dashboard" title="Refresh">↻</button>
+        </div>
+      </header>
+
+      <main id="overview" class="page-content">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span>SAFETY OPERATIONS</div>
+            <h1>Command center</h1>
+            <p>Emergency footage and AI review in one place.</p>
+          </div>
+          <div class="heading-status"><span class="pulse-dot"></span><span id="lastUpdated">Waiting for backend</span></div>
+        </div>
+
+        <div id="connectionBanner" class="connection-banner" role="status" hidden>
+          <span class="banner-symbol">!</span><div><strong>Backend unavailable</strong><p id="connectionMessage">Start the backend to load saved events and video.</p></div>
+        </div>
+
+        <section class="metric-grid" aria-label="Project overview">
+          <article class="metric-card metric-alerts">
+            <div class="metric-top"><span class="metric-label">EMERGENCY EVENTS</span><span class="metric-icon icon-red">!</span></div>
+            <div class="metric-value" id="emergencyCount">—</div><div class="metric-foot"><span class="metric-dot red-dot"></span>Phase 1 gesture alerts</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span class="metric-label">SAVED RECORDINGS</span><span class="metric-icon icon-blue">▣</span></div>
+            <div class="metric-value" id="recordingCount">—</div><div class="metric-foot"><span class="metric-dot blue-dot"></span>Emergency clips available</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span class="metric-label">PHASE 2 CANDIDATES</span><span class="metric-icon icon-amber">◈</span></div>
+            <div class="metric-value" id="candidateCount">—</div><div class="metric-foot"><span class="metric-dot amber-dot"></span>Awaiting human review</div>
+          </article>
+          <article class="metric-card metric-worker">
+            <div class="metric-top"><span class="metric-label">ANALYSIS WORKER</span><span class="metric-icon icon-green">⌁</span></div>
+            <div class="metric-value metric-state" id="workerState">—</div><div class="metric-foot"><span class="metric-dot" id="workerDot"></span><span id="workerMessage">Checking Phase 2 status</span></div>
+          </article>
+        </section>
+
+        <section class="panel camera-panel" aria-labelledby="camera-grid-title">
+          <div class="panel-heading section-heading-row">
+            <div><div class="section-kicker">CAMERA NETWORK</div><h2 id="camera-grid-title">Camera overview</h2><p class="panel-subtitle">Configured cameras and connection status.</p></div>
+            <span class="small-badge" id="cameraCountBadge">1 CAMERA CONFIGURED</span>
+          </div>
+          <div class="camera-grid" id="cameraGrid" aria-live="polite"></div>
+        </section>
+
+        <section class="featured-clips-grid" id="featuredClips" aria-label="Latest emergency and candidate clips" hidden>
+          <article class="panel featured-panel" id="featuredEmergencyPanel" hidden>
+            <div class="panel-heading">
+              <div><div class="section-kicker">PHASE 1 · EMERGENCY GESTURE</div><h2>Latest emergency recording</h2></div>
+              <span class="small-badge" id="latestRecordingBadge">NO RECORDING</span>
+            </div>
+            <div class="featured-media" id="featuredMedia">
+              <video id="featuredVideo" controls preload="metadata" playsinline hidden></video>
+              <div class="empty-media" id="featuredEmpty"><div class="empty-play">▶</div><strong>No emergency recording yet</strong><span>Saved footage will appear here after an alert.</span></div>
+              <div class="media-overlay" id="mediaTimestamp" hidden></div>
+            </div>
+            <div class="recording-details">
+              <div><span class="detail-label">CAMERA</span><strong id="latestCamera">CAMERA-01</strong></div>
+              <div><span class="detail-label">RECORDED</span><strong id="latestRecordedAt">No recording</strong></div>
+              <div><span class="detail-label">ALERT STATUS</span><strong id="latestAlertStatus" class="text-muted">No event selected</strong></div>
+              <button class="text-button" id="openLatestButton" type="button" disabled>Open recording <span>↗</span></button>
+            </div>
+          </article>
+
+          <article class="panel featured-panel" id="featuredCandidatePanel" hidden>
+            <div class="panel-heading">
+              <div><div class="section-kicker">PHASE 2 · VD-MIL</div><h2>Latest candidate clip</h2></div>
+              <span class="small-badge badge-amber">NEEDS REVIEW</span>
+            </div>
+            <div class="featured-media"><video id="candidateFeaturedVideo" controls preload="metadata" playsinline></video></div>
+            <div class="recording-details featured-candidate-details">
+              <div><span class="detail-label">CLIP</span><strong id="candidateFeaturedName">—</strong></div>
+              <div><span class="detail-label">RECORDED</span><strong id="candidateFeaturedTime">—</strong></div>
+              <div><span class="detail-label">MODEL SCORE</span><strong id="candidateFeaturedScore">—</strong></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="content-grid" aria-label="System status">
+          <aside class="right-column">
+            <article class="panel detection-panel">
+              <div class="panel-heading compact-heading"><div><div class="section-kicker">DETECTION</div><h2>System status</h2></div><span class="live-tag"><i></i>LOCAL</span></div>
+              <div class="detector-row">
+                <div class="detector-icon detector-blue">✋</div><div class="detector-copy"><strong>Phase 1</strong><span>Gesture monitor · desktop app</span></div><span class="detector-status" id="phase1State">LOCAL APP</span>
+              </div>
+              <div class="detector-row">
+                <div class="detector-icon detector-amber">◈</div><div class="detector-copy"><strong>Phase 2</strong><span>Video action analysis</span></div><span class="detector-status" id="phase2State">Starting</span>
+              </div>
+              <div class="score-block">
+                <div class="score-heading"><span>Latest decision score</span><strong id="decisionScore">—</strong></div>
+                <div class="score-track"><span id="scoreBar"></span></div>
+                <div class="score-foot"><span id="scoreThreshold">Threshold —</span><span id="scoreUpdated">No analysis yet</span></div>
+              </div>
+              <p class="review-disclaimer">Phase 2 scores are model outputs. Review candidate footage before drawing conclusions.</p>
+            </article>
+
+            <article class="panel alert-summary" id="system-status">
+              <div class="section-kicker">MOST RECENT ALERT</div>
+              <div class="alert-summary-main"><span class="alert-summary-icon" id="alertSummaryIcon">✓</span><div><strong id="alertSummaryTitle">All clear</strong><span id="alertSummaryText">No emergency events recorded.</span></div></div>
+              <div class="alert-summary-meta"><span id="alertSummaryCamera">CAMERA-01</span><span id="alertSummaryTime">—</span></div>
+            </article>
+          </aside>
+        </section>
+
+        <section class="recent-clips-grid" aria-label="Recent clips">
+        <section class="panel media-library" id="recordings" aria-labelledby="recording-library-title">
+          <div class="panel-heading section-heading-row">
+            <div><div class="section-kicker">LOCAL EVIDENCE</div><h2 id="recording-library-title">Emergency recordings</h2><p class="panel-subtitle">Saved clips linked to Phase 1 events.</p></div>
+            <a class="subtle-link" href="#activity">View event history <span>→</span></a>
+          </div>
+          <div class="recording-grid" id="recordingGrid"><div class="loading-card">Loading recordings…</div></div>
+        </section>
+
+        <section class="panel candidate-panel" id="candidates">
+          <div class="panel-heading section-heading-row">
+            <div><div class="section-kicker">PHASE 2 · VD-MIL</div><h2>Candidate clips for review</h2><p class="panel-subtitle">Automated candidates are unconfirmed and require human review.</p></div>
+            <span class="small-badge badge-amber" id="candidateReviewBadge">0 TO REVIEW</span>
+          </div>
+          <div class="candidate-grid" id="candidateGrid"><div class="loading-card">Loading candidate clips…</div></div>
+        </section>
+        </section>
+
+        <section class="panel activity-panel" id="activity">
+          <div class="panel-heading section-heading-row">
+            <div><div class="section-kicker">AUDIT TRAIL</div><h2>Recent event history</h2><p class="panel-subtitle">Latest Phase 1 emergency alerts.</p></div>
+          </div>
+          <div class="activity-list" id="activityList"><div class="loading-card">Loading event history…</div></div>
+        </section>
+
+        <footer class="page-footer"><span>SAFE SIGHT GUARDIAN</span><span>Local prototype · Human review required for Phase 2 candidates</span></footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-card">
+      <div class="modal-heading"><div><div class="section-kicker">PHASE 1 ALERT</div><h2 id="modalTitle">Emergency detected</h2><p id="modalMessage">Review the saved recording.</p></div><button id="closeModal" class="icon-button close-button" type="button" aria-label="Close alert video">×</button></div>
+      <video id="modalVideo" controls autoplay muted playsinline></video>
+      <p id="modalNoVideo" class="modal-no-video" hidden>No saved video was attached to this event.</p>
+    </div>
+  </div>
+</body>
+</html>

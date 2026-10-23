@@ -1,0 +1,10 @@
+
+opencv-python
+mediapipe
+tensorflow
+numpy
+fastapi
+uvicorn[standard]
+pydantic
+torch
+torchvision

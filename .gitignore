@@ -1,0 +1,47 @@
+﻿# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# IDE and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Emergency recordings and private footage
+emergency_clips/
+phase 2/incoming_clips/
+phase 2/candidate_clips/
+phase 2/events.jsonl
+
+# Temporary outputs and logs
+*.log
+
+# Temporary Phase 2 videos
+phase 2/tmp*.mp4
+phase 2/vdmil/test/video_test.mp4
+
+# Ignore nested Git metadata
+**/.git/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Temporary Phase 2 videos
+phase 2/tmp*.mp4
+phase 2/vdmil/test/video_test.mp4
+
+# Nested Git metadata
+**/.git/
+# Runtime event data
+backend/events.json
